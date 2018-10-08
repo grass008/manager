@@ -1,15 +1,13 @@
 import React, { Component } from 'react';
-import { View, Text } from 'react-native';
 import { Provider } from 'react-redux';
-import { createStore } from 'redux';
-import firebase from 'firebase'
-import reducers from './reducers'
-import LoginForm from './components/LoginForm'
-
-const store = createStore(reducers);
+import { createStore, applyMiddleware } from 'redux';
+import firebase from 'firebase';
+import ReduxThunk from 'redux-thunk';
+import reducers from './reducers';
+import LoginForm from './components/LoginForm';
 
 class App extends Component {
-	componetWillMount() {
+	configFirebase() {
 		const config = {
     		apiKey: 'AIzaSyA1dr9Nl5rqHMsfR32Hcvza1rLI3plT_nA',
    			authDomain: 'manager-693c6.firebaseapp.com',
@@ -18,10 +16,19 @@ class App extends Component {
     		storageBucket: 'manager-693c6.appspot.com',
     		messagingSenderId: '806765340083'
   		};
+  		console.log('here we are')
   		firebase.initializeApp(config);
+	};
+
+	componetWillMount() {
+		this.configFirebase();
 	}
 
 	render() {
+		const store = createStore(reducers, {}, applyMiddleware(ReduxThunk));
+		
+		this.configFirebase();
+
 		return (
 			<Provider store={store}>
 				<LoginForm />
